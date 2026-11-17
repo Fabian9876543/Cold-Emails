@@ -64,7 +64,8 @@ export function createAiGateway(deps: { config: AppConfig; db: DB; secrets: Secr
       const models: AiModelDto[] = [];
       for await (const m of client.models.list({ limit: 100 })) {
         if (m.lifecycle && m.lifecycle !== "active") continue;
-        if (m.capabilities && m.capabilities.structured_outputs && !m.capabilities.structured_outputs.supported) continue;
+        if (m.capabilities?.structured_outputs && !m.capabilities.structured_outputs.supported) continue;
+        if (m.capabilities?.effort && !m.capabilities.effort.supported) continue;
         models.push({ id: m.id, displayName: m.display_name, line: (m.line as ModelLine | null) ?? null, createdAt: m.created_at });
       }
       models.sort((a, b) => b.createdAt.localeCompare(a.createdAt));

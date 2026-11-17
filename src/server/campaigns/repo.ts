@@ -29,6 +29,7 @@ export interface CampaignRow {
   ai_context: string;
   ai_use_website: number;
   ai_auto_approve: number;
+  ai_batch: number;
   created_at: number;
   updated_at: number;
   started_at: number | null;
@@ -63,6 +64,7 @@ export interface CampaignLeadRow {
   ai_quality: string | null;
   ai_reason: string | null;
   ai_error: string | null;
+  ai_batch_id: string | null;
   last_sent_at: number | null;
   created_at: number;
 }

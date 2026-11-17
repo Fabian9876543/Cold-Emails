@@ -45,7 +45,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { api, notifyError, notifySuccess, useApi } from "../api";
 import { ErrorAlert, Loading, PageHeader, StatCard } from "../components/common";
 import { EmailPreview, SpamCheckPanel, VariableMenu, useInsertAtCursor } from "../components/editor";
-import { AiOpenersStep, AiWriterButton } from "../components/ai";
+import { AiImproveMenu, AiOpenersStep, AiWriterButton } from "../components/ai";
 import { WEEKDAYS } from "../texte";
 import { SEQUENCE_TEMPLATES } from "../../shared/sequences";
 import { usesPlaceholder } from "../../shared/template";
@@ -421,7 +421,10 @@ function SequenceStep({ draft, update, campaignId }: { draft: Draft; update: (p:
                 <Text size="sm" fw={500}>
                   Text
                 </Text>
-                <VariableMenu onInsert={bodyInsert.insert} aiEnabled={draft.aiEnabled} />
+                <Group gap="xs">
+                  <AiImproveMenu subject={step.subject} body={step.body} position={step.position} formality={draft.formality} onApply={(subject, body) => setStep({ subject, body })} />
+                  <VariableMenu onInsert={bodyInsert.insert} aiEnabled={draft.aiEnabled} />
+                </Group>
               </Group>
               <Textarea
                 ref={bodyInsert.ref as React.Ref<HTMLTextAreaElement>}

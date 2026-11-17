@@ -3,7 +3,7 @@ import { pruneEvents } from "../lib/events";
 import { checkCampaignHealth, completeFinishedCampaigns } from "../campaigns/health";
 import { recoverInterruptedSends, runSendTick } from "./sender";
 import { runInboxPoll } from "./inboxPoller";
-import { runAiJobs } from "../ai/jobs";
+import { recoverInterruptedAi, runAiJobs } from "../ai/jobs";
 
 export interface WorkerHandle {
   stop(): Promise<void>;
@@ -54,6 +54,7 @@ export function housekeeping(ctx: AppContext): void {
 export function startWorker(ctx: AppContext): WorkerHandle {
   const recovered = recoverInterruptedSends(ctx);
   if (recovered > 0) ctx.log.warn(`${recovered} unterbrochene Sendungen gefunden – zur Sicherheit nicht erneut gesendet.`);
+  recoverInterruptedAi(ctx);
   const loops = [
     startLoop(ctx, "Versand", 20_000, 3_000, () => runSendTick(ctx)),
     startLoop(ctx, "Posteingang", 60_000, 10_000, () => runInboxPoll(ctx)),

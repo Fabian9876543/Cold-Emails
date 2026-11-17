@@ -257,6 +257,16 @@ CREATE TABLE events (
 CREATE INDEX events_created ON events (created_at);
 `,
   },
+  {
+    id: 2,
+    name: "ai_batch",
+    sql: `
+ALTER TABLE campaigns ADD COLUMN ai_batch INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE campaign_leads ADD COLUMN ai_batch_id TEXT;
+CREATE INDEX campaign_leads_ai ON campaign_leads (ai_status);
+CREATE INDEX inbound_ai ON inbound (ai_status);
+`,
+  },
 ];
 
 export function migrate(db: Database.Database): void {
