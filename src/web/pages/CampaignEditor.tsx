@@ -578,7 +578,8 @@ function SendingStep({ draft, update, mailboxes }: { draft: Draft; update: (p: P
 
 function ReviewStep({ campaignId, isRunning, onSave, dirty }: { campaignId: number; isRunning: boolean; onSave: () => Promise<number | null>; dirty: boolean }) {
   const [ignoreDns, setIgnoreDns] = useState(false);
-  const preflight = useApi<PreflightDto>(`/api/campaigns/${campaignId}/preflight${ignoreDns ? "?ignoreDns=1" : ""}`);
+  // Die Prüfung läuft immer ohne Ausnahme; "trotzdem starten" wird erst beim Start mitgeschickt.
+  const preflight = useApi<PreflightDto>(`/api/campaigns/${campaignId}/preflight`);
   const campaign = useApi<CampaignDto>(`/api/campaigns/${campaignId}`);
   const [testStep, setTestStep] = useState<string | null>("1");
   const [busy, setBusy] = useState<string | null>(null);
@@ -608,7 +609,7 @@ function ReviewStep({ campaignId, isRunning, onSave, dirty }: { campaignId: numb
     try {
       const r = await api.post<{ ok: boolean; preflight: PreflightDto }>(`/api/campaigns/${campaignId}/${campaign.data?.status === "paused" ? "resume" : "start"}`, { ignoreDns });
       if (!r.ok) {
-        queryClient.setQueryData([`/api/campaigns/${campaignId}/preflight${ignoreDns ? "?ignoreDns=1" : ""}`], r.preflight);
+        await preflight.refetch();
         notifyError(new Error("Bitte zuerst die rot markierten Punkte beheben."));
         return;
       }

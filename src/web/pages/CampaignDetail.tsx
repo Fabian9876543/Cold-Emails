@@ -315,7 +315,7 @@ function CampaignLeads({ campaignId }: { campaignId: number }) {
                   <Table.Td>
                     <Text size="sm">{l.name || l.email}</Text>
                     <Text size="xs" c="dimmed">
-                      {l.name ? l.email : ""} {l.company ? `· ${l.company}` : ""}
+                      {[l.name ? l.email : null, l.company || null].filter(Boolean).join(" · ")}
                     </Text>
                   </Table.Td>
                   <Table.Td>
