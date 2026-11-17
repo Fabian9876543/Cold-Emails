@@ -41,6 +41,7 @@ import {
   IconInfoCircle,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "react-router";
 import { api, notifyError, notifySuccess, useApi } from "../api";
 import { EmptyState, ErrorAlert, Loading, PageHeader, StatusBadge } from "../components/common";
 import { MAILBOX_STATUS } from "../texte";
@@ -106,6 +107,16 @@ export function MailboxesPage() {
   const mailboxes = useApi<MailboxDto[]>("/api/mailboxes", { refetchInterval: 30_000 });
   const settings = useApi<SettingsDto>("/api/settings");
   const [editing, setEditing] = useState<MailboxDto | "new" | null>(null);
+  const [params, setParams] = useSearchParams();
+
+  // Rückmeldung nach "Mit Google verbinden"
+  useEffect(() => {
+    const result = params.get("oauth");
+    if (!result) return;
+    if (result === "ok") notifySuccess(`${params.get("email") ?? "Das Postfach"} ist über Google verbunden.`, "Postfach verbunden");
+    else notifyError(new Error(params.get("message") ?? "Unbekannter Fehler"), "Google-Verbindung fehlgeschlagen");
+    setParams({}, { replace: true });
+  }, [params, setParams]);
 
   return (
     <Stack>
@@ -270,9 +281,15 @@ function MailboxCard({ mailbox: m, onEdit }: { mailbox: MailboxDto; onEdit: () =
             <Button size="xs" variant="light" color="red" onClick={test} loading={busy === "test"}>
               Erneut prüfen
             </Button>
-            <Button size="xs" variant="subtle" color="red" onClick={onEdit}>
-              Zugangsdaten ändern
-            </Button>
+            {m.authType === "google_oauth" ? (
+              <Button size="xs" variant="subtle" color="red" component="a" href={`/api/oauth/google/start?${new URLSearchParams({ email: m.email, fromName: m.fromName }).toString()}`}>
+                Erneut mit Google verbinden
+              </Button>
+            ) : (
+              <Button size="xs" variant="subtle" color="red" onClick={onEdit}>
+                Zugangsdaten ändern
+              </Button>
+            )}
           </Group>
         </Alert>
       )}
