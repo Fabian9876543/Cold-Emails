@@ -1,0 +1,25 @@
+html,
+body {
+  margin: 0;
+}
+
+.mail-preview {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.mono-block {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  word-break: break-all;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}

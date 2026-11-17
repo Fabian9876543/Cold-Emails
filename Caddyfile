@@ -1,0 +1,6 @@
+# Automatisches HTTPS (Let's Encrypt) für die Plattform.
+# Die Domain kommt aus der Variable DOMAIN in der Datei .env.
+{$DOMAIN} {
+	encode gzip
+	reverse_proxy app:3000
+}

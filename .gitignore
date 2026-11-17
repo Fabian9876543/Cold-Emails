@@ -1,0 +1,8 @@
+node_modules/
+dist/
+data/
+.env
+*.log
+e2e/screenshots/*.tmp.png
+coverage/
+.DS_Store
