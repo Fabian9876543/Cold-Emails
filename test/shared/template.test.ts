@@ -43,3 +43,33 @@ describe("render", () => {
     ]);
   });
 });
+
+import { greeting } from "../../src/shared/template";
+import { checkSpam } from "../../src/shared/spamcheck";
+
+describe("Begrüßung", () => {
+  it("passt sich Ansprache und vorhandenen Angaben an", () => {
+    expect(greeting("sie", "Frau", "Julia", "Becker")).toBe("Guten Tag Frau Becker");
+    expect(greeting("sie", "", "Julia", "Becker")).toBe("Guten Tag Julia Becker");
+    expect(greeting("sie", "", "", "")).toBe("Guten Tag");
+    expect(greeting("du", "Frau", "Julia", "Becker")).toBe("Hallo Julia");
+    expect(greeting("du", "", "", "Becker")).toBe("Hallo");
+  });
+});
+
+describe("Spam-Check", () => {
+  it("bewertet sachliche, personalisierte Mails als unkritisch", () => {
+    const r = checkSpam({ subject: "Frage zu {{firma}}", body: "{{begruessung}},\n\nkurze Frage zu Ihrer Logistik: Wer ist bei Ihnen für den Fuhrpark zuständig?\n\nViele Grüße", isFirstStep: true });
+    expect(r.level).toBe("niedrig");
+  });
+  it("erkennt typische Spam-Auslöser", () => {
+    const r = checkSpam({ subject: "Re: KOSTENLOS testen!!!", body: "Jetzt kaufen!!! 100% garantiert, hier klicken: https://bit.ly/abc", isFirstStep: true });
+    expect(r.level).toBe("hoch");
+    expect(r.findings.some((f) => f.message.includes("Link-Kürzer"))).toBe(true);
+    expect(r.findings.some((f) => f.message.includes("Re:"))).toBe(true);
+  });
+  it("vermisst Personalisierung im Erstkontakt", () => {
+    const r = checkSpam({ subject: "Hallo", body: "Wir bieten Software für Logistik an. Interesse an einem Gespräch?", isFirstStep: true });
+    expect(r.findings.some((f) => f.message.includes("Personalisierung"))).toBe(true);
+  });
+});

@@ -67,8 +67,24 @@ export interface VariableInfo {
   group: "kontakt" | "absender" | "system";
 }
 
+/**
+ * Begrüßungszeile passend zur Ansprache:
+ * Sie → "Guten Tag Frau Becker" (sonst "Guten Tag Julia Becker" bzw. "Guten Tag"),
+ * Du → "Hallo Julia" (sonst "Hallo").
+ */
+export function greeting(formality: "sie" | "du", salutation: string, firstName: string, lastName: string): string {
+  const first = firstName.trim();
+  const last = lastName.trim();
+  if (formality === "du") return first ? `Hallo ${first}` : "Hallo";
+  const sal = salutation.trim();
+  if ((sal === "Herr" || sal === "Frau") && last) return `Guten Tag ${sal} ${last}`;
+  const full = `${first} ${last}`.trim();
+  return full ? `Guten Tag ${full}` : "Guten Tag";
+}
+
 /** Standard-Platzhalter, die immer verfügbar sind. */
 export const STANDARD_VARIABLES: VariableInfo[] = [
+  { key: "begruessung", label: "Begrüßung (z. B. „Guten Tag Frau Becker“)", example: "Guten Tag Frau Becker", group: "kontakt" },
   { key: "anrede", label: "Anrede (Herr/Frau)", example: "Frau", group: "kontakt" },
   { key: "vorname", label: "Vorname", example: "Julia", group: "kontakt" },
   { key: "nachname", label: "Nachname", example: "Becker", group: "kontakt" },
